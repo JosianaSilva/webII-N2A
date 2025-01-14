@@ -103,61 +103,68 @@ app.post('/laboratorio/novo', upload.array('fotos', 10), async (req, res) => {
  * @returns {Promise<void>} Retorna o arquivo PDF contendo as informações dos laboratórios.
  */
 app.get('/laboratorio/relatorio', weekDayMiddleware, async (req, res) => {
-    const db = await connectToDatabase();
-    const labsCollection = db.collection('laboratorios');
-    const labs = await labsCollection.find().toArray();
-  
-    const pdfDoc = await PDFDocument.create();
-  
-    for (let lab of labs) {
-      const page = pdfDoc.addPage();
-      let y = page.getHeight() - 50;  // Começa no topo da página
-  
-      page.drawText(lab.nome, { size: 18 });
+  const db = await connectToDatabase();
+  const labsCollection = db.collection('laboratorios');
+  const labs = await labsCollection.find().toArray();
+
+  const pdfDoc = await PDFDocument.create();
+
+  for (let lab of labs) {
+      let page = pdfDoc.addPage();
+      let y = page.getHeight() - 50;
+
+      page.drawText(lab.nome, { size: 18, x: 50, y });
       y -= 30;
-  
-      page.drawText(`Descrição: ${lab.descricao}`, { size: 12 });
+
+      page.drawText(`Descrição: ${lab.descricao}`, { size: 12, x: 50, y });
       y -= 20;
-      page.drawText(`Capacidade: ${lab.capacidade}`, { size: 12 });
+
+      page.drawText(`Capacidade: ${lab.capacidade}`, { size: 12, x: 50, y });
       y -= 40;
-  
+
       if (lab.fotos.length > 0) {
-        page.drawText('Fotos:', { size: 12 });
-        y -= 20;
-  
-        for (let url of lab.fotos) {
-          try {
-            const imageBuffer = await axios.get(url, { responseType: 'arraybuffer' });
-            const image = await pdfDoc.embedJpg(imageBuffer.data);
-            const imageDims = image.scale(0.5);
-  
-            page.drawImage(image, {
-              x: 50,
-              y: y - imageDims.height,
-              width: imageDims.width,
-              height: imageDims.height,
-            });
-  
-            y -= imageDims.height + 20;
-  
-            if (y < 50) {
-              page = pdfDoc.addPage();
-              y = page.getHeight() - 50;
-            }
-          } catch (error) {
-            console.error(`Erro ao baixar imagem de ${url}:`, error);
+          page.drawText('Fotos:', { size: 12, x: 50, y });
+          y -= 20;
+
+          for (let url of lab.fotos) {
+              try {
+                  const imageBuffer = await axios.get(url, { responseType: 'arraybuffer' });
+                  const image = await pdfDoc.embedJpg(imageBuffer.data);
+                  const imageDims = image.scale(0.5);
+
+                  if (y < imageDims.height + 50) {
+                      page = pdfDoc.addPage();
+                      y = page.getHeight() - 50;
+                  }
+
+                  page.drawImage(image, {
+                      x: 50,
+                      y: y - imageDims.height,
+                      width: imageDims.width,
+                      height: imageDims.height,
+                  });
+
+                  y -= imageDims.height + 20;
+              } catch (error) {
+                  console.error(`Erro ao baixar imagem de ${url}:`, error);
+              }
           }
-        }
       }
-  
+
+      if (y < 50) {
+          page = pdfDoc.addPage();
+          y = page.getHeight() - 50;
+      }
+
       y -= 40;
-    }
-  
-    const pdfBytes = await pdfDoc.save();
-    const pdfPath = path.join(__dirname, 'relatorio.pdf');
-    fs.writeFileSync(pdfPath, pdfBytes);
-    res.download(pdfPath);
-  });
+  }
+
+  const pdfBytes = await pdfDoc.save();
+  const pdfPath = path.join(__dirname, 'relatorio.pdf');
+  fs.writeFileSync(pdfPath, pdfBytes);
+  res.download(pdfPath);
+});
+
   
   
 
