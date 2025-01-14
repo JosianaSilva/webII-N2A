@@ -92,7 +92,7 @@ app.post('/laboratorio/novo', upload.array('fotos', 10), async (req, res) => {
   const labsCollection = db.collection('laboratorios');
 
   await labsCollection.insertOne({ nome, descricao, capacidade: parseInt(capacidade), fotos });
-  res.status(201).send('Laboratório criado com sucesso.');
+  res.status(200).send('Laboratório criado com sucesso.');
 });
 
 /**
@@ -169,3 +169,5 @@ app.get('/laboratorio/relatorio', weekDayMiddleware, async (req, res) => {
   
 
 app.listen(3000, () => console.log('API rodando em http://localhost:3000'));
+
+module.exports = app; 
