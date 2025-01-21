@@ -10,8 +10,21 @@ const path = require('path');
 const axios = require('axios');
 
 const app = express();
-const upload = multer({ dest: 'uploads/' });
-const uri = dotenv.config().parsed.MONGODB_URI;
+
+// Configuração do multer para armazenar os arquivos em memória.
+const storage = multer.memoryStorage();
+const upload = multer({ storage });
+
+let uri;
+
+try{
+  uri = dotenv.config().parsed.MONGODB_URI;
+  if (!uri) throw new Error('URI de conexão com o MongoDB não encontrada.');
+} catch (error) {
+  uri = process.env.MONGODB_URI;
+  if (!uri) throw new Error('URI de conexão com o MongoDB não encontrada.');
+}
+
 const client = new MongoClient(uri, {
   serverApi: {
     version: ServerApiVersion.v1,
