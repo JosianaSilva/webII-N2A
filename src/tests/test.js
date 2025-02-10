@@ -2,7 +2,7 @@ const request = require('supertest');
 const express = require('express');
 const jwt = require('jsonwebtoken');
 const { MongoClient } = require('mongodb');
-const app = require('../api/index');
+const app = require('index');
 
 jest.mock('mongodb');
 jest.mock('jsonwebtoken');
