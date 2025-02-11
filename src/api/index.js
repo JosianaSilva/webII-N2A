@@ -3,6 +3,7 @@ const dotenv = require('dotenv');
 const authRoutes = require('./routes/auth');
 const laboratorioRoutes = require('./routes/laboratorio');
 const videoTutorialRoutes = require('./routes/videoTutorial');
+const temperaturaRoutes = require('./routes/temperatura');
 const path = require('path'); // Para lidar com caminhos de arquivos
 
 // Carregar variáveis de ambiente
@@ -21,6 +22,7 @@ app.use(express.json());
 app.use('', authRoutes);
 app.use('', laboratorioRoutes);
 app.use('', videoTutorialRoutes);
+app.use('', temperaturaRoutes);
 
 // Definir a porta a partir das variáveis de ambiente ou usar uma porta padrão
 const PORT = process.env.PORT || 3000;
