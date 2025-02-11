@@ -6,8 +6,8 @@ const multer = require('multer');
 const fs = require('fs');
 const path = require('path');
 const axios = require('axios');
-const jwt = require('jsonwebtoken');
-
+const authenticateToken = require('../middleware/authToken');
+const weekDayMiddleware = require('../middleware/weekDay')
 
 dotenv.config();
 
@@ -27,27 +27,6 @@ async function connectToDatabase() {
 }
 
 const router = express.Router();
-
-// Função middleware para verificar se é dia de semana
-function weekDayMiddleware(req, res, next) {
-  const day = new Date().getDay();
-  if (day === 0 || day === 6) {
-    return res.status(403).send('Acesso permitido apenas de segunda a sexta-feira.');
-  }
-  next();
-}
-
-// Middleware de autenticação
-function authenticateToken(req, res, next) {
-  const token = req.headers['authorization'];
-  if (!token) return res.status(401).send('Token não fornecido.');
-
-  jwt.verify(token.split(' ')[1], 'secretKey', (err, user) => {
-    if (err) return res.status(403).send('Token inválido.');
-    req.user = user;
-    next();
-  });
-}
 
 const upload = multer({ dest: 'uploads/' });
 
