@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Laboratorios</title>
+    <title>Laboratórios</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -17,6 +17,7 @@
             max-width: 400px;
             margin-left: auto;
             margin-right: auto;
+            background-color: #f9f9f9;
         }
     </style>
 </head>
@@ -24,22 +25,36 @@
 
 <h1>Status dos Laboratórios</h1>
 <div id="notifications">
-    <p>Aguardando notificações...</p>
+    <p id="p1">Aguardando notificações...</p>
 </div>
 
 <script>
-    const eventSource = new EventSource('https://web-ii-n2-a.vercel.app/eventos');
+    const socket = new WebSocket(`ws://${window.location.host}`);
 
-    eventSource.onmessage = function(event) {
+    socket.onopen = function() {
+        console.log("✅ Conectado ao WebSocket Server.");
+    };
+
+    socket.onmessage = function(event) {
+        console.log("📩 Mensagem recebida:", event.data); // Debug
         const data = JSON.parse(event.data);
+        
         const notificationsDiv = document.getElementById('notifications');
+        if (document.getElementById('p1')){
+            notificationsDiv.removeChild(document.getElementById('p1'));
+        }
+
         const message = document.createElement('p');
-        message.textContent = data.message;
+        message.textContent = data.text;
         notificationsDiv.appendChild(message);
     };
 
-    eventSource.onerror = function() {
-        console.error("Erro na conexão com o servidor.");
+    socket.onerror = function(error) {
+        console.error("❌ Erro na conexão WebSocket:", error);
+    };
+
+    socket.onclose = function() {
+        console.log("⚠️ Conexão WebSocket fechada.");
     };
 </script>
 

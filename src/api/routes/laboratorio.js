@@ -6,6 +6,7 @@ const multer = require('multer');
 const axios = require('axios');
 const authenticateToken = require('../middleware/authToken');
 const weekDayMiddleware = require('../middleware/weekDay');
+const { broadcast } = require('../socket');
 
 dotenv.config();
 const uri = process.env.MONGODB_URI;
@@ -90,45 +91,16 @@ router.get('/laboratorio/relatorio', authenticateToken, weekDayMiddleware, async
     res.status(500).json({ erro: 'Erro ao gerar o relatório.' });
   }
 });
-// Lista de clientes conectados via SSE
-const clients = [];
-
-// Endpoint para registrar clientes SSE
-router.get('/eventos', (req, res) => {
-  res.setHeader('Content-Type', 'text/event-stream');
-  res.setHeader('Cache-Control', 'no-cache');
-  res.setHeader('Connection', 'keep-alive');
-
-  res.flushHeaders(); // Garante que os headers sejam enviados imediatamente
-
-  // Mantém a conexão aberta
-  const keepAlive = setInterval(() => {
-    res.write(`data: ${JSON.stringify({ message: "heartbeat" })}\n\n`);
-  }, 15000);
-
-  clients.push(res);
-
-  req.on('close', () => {
-    clearInterval(keepAlive);
-    const index = clients.indexOf(res);
-    if (index !== -1) {
-      clients.splice(index, 1);
-    }
-  });
-});
 
 // Endpoint para bloquear um laboratório
-
 router.post('/bloquear/:lab', (req, res) => {
-  console.log("Parâmetros recebidos:", req.params);
   const lab = req.params.lab;
-  const message = `Laboratório ${lab} foi bloqueado.`;
+  const message = { type: 'bloquear', lab, text: `⚠️ Laboratório ${lab} foi bloqueado.` };
 
-  clients.forEach(client => {
-    client.write(`data: ${JSON.stringify({ message })}\n\n`);
-  });
+  console.log("Bloqueio enviado:", message); // Debug
+  broadcast(message);
 
-  res.status(200).json({ success: true, message });
+  res.status(200).json({ success: true, message: message.text });
 });
 
 module.exports = router;

@@ -7,6 +7,8 @@ const videoTutorialRoutes = require('./routes/videoTutorial');
 const temperaturaRoutes = require('./routes/temperatura');
 const luzRoutes = require('./routes/luz');
 const path = require('path'); // Para lidar com caminhos de arquivos
+const { wss } = require('./socket');
+const http = require('http');
 
 // Carregar variáveis de ambiente
 dotenv.config();
@@ -23,6 +25,17 @@ app.use(express.static(path.join(__dirname, 'front')));
 // Middleware para análise de corpo JSON
 app.use(express.json());
 
+
+// Criando o servidor HTTP para o WebSocket
+const server = http.createServer(app);
+
+server.on('upgrade', (request, socket, head) => {
+    wss.handleUpgrade(request, socket, head, (ws) => {
+        wss.emit('connection', ws, request);
+    });
+});
+
+
 // Definindo rotas
 app.use('', authRoutes);
 app.use('', laboratorioRoutes);
@@ -34,7 +47,7 @@ app.use('', luzRoutes);
 const PORT = process.env.PORT || 3000;
 
 // Iniciando o servidor
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`API rodando em http://localhost:${PORT}`);
 });
 
