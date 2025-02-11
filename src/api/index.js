@@ -4,6 +4,7 @@ const authRoutes = require('./routes/auth');
 const laboratorioRoutes = require('./routes/laboratorio');
 const videoTutorialRoutes = require('./routes/videoTutorial');
 const temperaturaRoutes = require('./routes/temperatura');
+const luzRoutes = require('./routes/luz');
 const path = require('path'); // Para lidar com caminhos de arquivos
 
 // Carregar variáveis de ambiente
@@ -23,6 +24,7 @@ app.use('', authRoutes);
 app.use('', laboratorioRoutes);
 app.use('', videoTutorialRoutes);
 app.use('', temperaturaRoutes);
+app.use('', luzRoutes);
 
 // Definir a porta a partir das variáveis de ambiente ou usar uma porta padrão
 const PORT = process.env.PORT || 3000;
