@@ -14,7 +14,7 @@ dotenv.config();
 const app = express();
 
 // Middleware para servir arquivos estáticos (HTML, CSS, JS)
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'front')));
 
 // Middleware para análise de corpo JSON
 app.use(express.json());
