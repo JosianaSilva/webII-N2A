@@ -1,4 +1,5 @@
 const express = require('express');
+const cors = require('cors')
 const dotenv = require('dotenv');
 const authRoutes = require('./routes/auth');
 const laboratorioRoutes = require('./routes/laboratorio');
@@ -12,6 +13,9 @@ dotenv.config();
 
 // Criando a instância do Express
 const app = express();
+app.use(cors({
+  origin: '*'
+}))
 
 // Middleware para servir arquivos estáticos (HTML, CSS, JS)
 app.use(express.static(path.join(__dirname, 'front')));
