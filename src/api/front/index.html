@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laboratorios</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 50px;
+        }
+        #notifications {
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #ccc;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Status dos Laboratórios</h1>
+<div id="notifications">
+    <p>Aguardando notificações...</p>
+</div>
+
+<script>
+    const eventSource = new EventSource('/eventos');
+
+    eventSource.onmessage = function(event) {
+        const data = JSON.parse(event.data);
+        const notificationsDiv = document.getElementById('notifications');
+        const message = document.createElement('p');
+        message.textContent = data.message;
+        notificationsDiv.appendChild(message);
+    };
+
+    eventSource.onerror = function() {
+        console.error("Erro na conexão com o servidor.");
+    };
+</script>
+
+</body>
+</html>
