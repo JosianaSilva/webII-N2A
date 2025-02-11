@@ -99,6 +99,8 @@ router.get('/eventos', (req, res) => {
   res.setHeader('Cache-Control', 'no-cache');
   res.setHeader('Connection', 'keep-alive');
 
+  res.flushHeaders();
+
   clients.push(res);
 
   req.on('close', () => {
@@ -108,7 +110,6 @@ router.get('/eventos', (req, res) => {
     }
   });
 });
-
 // Endpoint para bloquear um laboratório
 
 router.post('/bloquear/:lab', (req, res) => {
