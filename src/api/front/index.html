@@ -28,7 +28,7 @@
 </div>
 
 <script>
-    const eventSource = new EventSource('/eventos');
+    const eventSource = new EventSource('https://web-ii-n2-a.vercel.app/eventos');
 
     eventSource.onmessage = function(event) {
         const data = JSON.parse(event.data);
