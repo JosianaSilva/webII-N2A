@@ -90,5 +90,37 @@ router.get('/laboratorio/relatorio', authenticateToken, weekDayMiddleware, async
     res.status(500).json({ erro: 'Erro ao gerar o relatório.' });
   }
 });
+// Lista de clientes conectados via SSE
+const clients = [];
+
+// Endpoint para registrar clientes SSE
+router.get('/eventos', (req, res) => {
+  res.setHeader('Content-Type', 'text/event-stream');
+  res.setHeader('Cache-Control', 'no-cache');
+  res.setHeader('Connection', 'keep-alive');
+
+  clients.push(res);
+
+  req.on('close', () => {
+    const index = clients.indexOf(res);
+    if (index !== -1) {
+      clients.splice(index, 1);
+    }
+  });
+});
+
+// Endpoint para bloquear um laboratório
+
+router.post('/bloquear/:lab', (req, res) => {
+  console.log("Parâmetros recebidos:", req.params);
+  const lab = req.params.lab;
+  const message = `Laboratório ${lab} foi bloqueado.`;
+
+  clients.forEach(client => {
+    client.write(`data: ${JSON.stringify({ message })}\n\n`);
+  });
+
+  res.status(200).json({ success: true, message });
+});
 
 module.exports = router;
