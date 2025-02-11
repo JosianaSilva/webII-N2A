@@ -8,6 +8,15 @@
   ],
   "routes": [
     {
+      "src": "/eventos",
+      "headers": {
+        "Cache-Control": "no-cache",
+        "Content-Type": "text/event-stream",
+        "Connection": "keep-alive"
+      },
+      "dest": "src/api/index.js"
+    },
+    {
       "src": "/(.*)",
       "dest": "src/api/index.js"
     }
