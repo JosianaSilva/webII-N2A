@@ -99,17 +99,24 @@ router.get('/eventos', (req, res) => {
   res.setHeader('Cache-Control', 'no-cache');
   res.setHeader('Connection', 'keep-alive');
 
-  res.flushHeaders();
+  res.flushHeaders(); // Garante que os headers sejam enviados imediatamente
+
+  // Mantém a conexão aberta
+  const keepAlive = setInterval(() => {
+    res.write(`data: ${JSON.stringify({ message: "heartbeat" })}\n\n`);
+  }, 15000);
 
   clients.push(res);
 
   req.on('close', () => {
+    clearInterval(keepAlive);
     const index = clients.indexOf(res);
     if (index !== -1) {
       clients.splice(index, 1);
     }
   });
 });
+
 // Endpoint para bloquear um laboratório
 
 router.post('/bloquear/:lab', (req, res) => {
