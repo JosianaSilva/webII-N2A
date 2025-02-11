@@ -61,6 +61,12 @@ GET http://localhost:3000/laboratorio/relatorio
 **Resposta:**
 Um arquivo PDF será baixado automaticamente com os detalhes dos laboratórios.
 
+### Bloqueio de Laboratorio
+**Requisição:**
+```bash
+POST http://localhost:3000/bloquear/"nome do lab"
+```
+
 ## Requisitos
 
 ### Tecnologias Necessárias
